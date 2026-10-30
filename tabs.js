@@ -117,6 +117,7 @@ function permission(perms, origin, name, keys) {
 }
 // a site checking before it asks (Notification.permission, permissions.query) must not read "denied" while
 // undecided; only these two, since showing a notification or opening a device still goes through the dialog.
+// Electron has no "prompt" answer, so an undecided site reads "granted" here, never "prompt" or "default".
 // ponytail: Electron's check can only say yes or no, so an undecided media check also unlocks device labels
 // in enumerateDevices before approval; the alternative (no) makes query-first sites never ask at all.
 const checked = (perms, origin, name, keys) => (permission(perms, origin, name, keys) ?? ['media', 'notifications'].includes(name)) === true
