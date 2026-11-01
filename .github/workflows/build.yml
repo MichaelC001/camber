@@ -86,7 +86,7 @@ jobs:
         env:
           APPIMAGE_EXTRACT_AND_RUN: 1
         run: |
-          app=dist/camber-0.1.0-${{ matrix.appimage }}.AppImage
+          app=$(ls dist/camber-*-${{ matrix.appimage }}.AppImage)
           shot=shot-${{ matrix.name }}-appimage.png
           if ! xvfb-run -a -s "-screen 0 1280x820x24" node .github/smoke.mjs $app $shot; then
             echo "::warning::AppImage failed with the sandbox on, retrying with --no-sandbox"
@@ -97,7 +97,7 @@ jobs:
       - name: smoke test (installed, windows)
         if: matrix.installer
         run: |
-          ./dist/camber-0.1.0-x64.exe //S
+          ./dist/camber-*-x64.exe //S
           for i in $(seq 1 60); do [ -f "$LOCALAPPDATA/Programs/camber/camber.exe" ] && break; sleep 2; done
           sleep 10 # let the installer finish writing
           ls -la "$LOCALAPPDATA/Programs/camber/"
