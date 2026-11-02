@@ -418,6 +418,8 @@ function forgetRoute() {
 // Arc-style archive: today tabs nobody activated for archiveHours (state.json, default 12, 0 = off) are closed
 const archiveHours = () => state.archiveHours ?? 12
 function archive() {
+  // a tab playing sound is in use wherever it is
+  for (const [id, v] of views) if (v.webContents.isCurrentlyAudible()) { const f = find(id); if (f) f.t.lastActive = Date.now() }
   const gone = tabs.prune(state, Date.now(), archiveHours())
   gone.forEach(dropView)
   return gone.length
