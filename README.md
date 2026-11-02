@@ -43,7 +43,7 @@ no Chromium fork to port. A new Chromium is an Electron version bump
 
 Get the installer for your system from the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases) and check it
-against `SHA256SUMS.txt`.
+against `SHA256SUMS.txt`. What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
 
 | OS | File | Tested |
 | --- | --- | --- |
