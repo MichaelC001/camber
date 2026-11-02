@@ -25,6 +25,8 @@ test('checks GitHub quietly', async () => {
   assert.strictEqual(await check('0.1.0', async () => { throw new TypeError('fetch failed') }), null)
   // a release page anywhere else is never offered
   assert.strictEqual(await check('0.1.0', reply(200, { tag_name: 'v9.0.0', html_url: 'https://example.com/x' })), null)
+  assert.strictEqual(await check('0.1.0', reply(200, { tag_name: 'v9.0.0', html_url: 'https://github.com/yuvrajangadsingh/camber/releases/../../../other/x/releases/tag/v9.0.0' })), null)
+  assert.strictEqual(await check('0.1.0', reply(200, { tag_name: 'v9.0.0', html_url: 42 })), null)
 })
 
 test('installs in the background only where electron-updater can', () => {

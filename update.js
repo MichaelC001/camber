@@ -24,9 +24,10 @@ async function check(current, fetchFn = fetch, url = RELEASES) {
     const res = await fetchFn(url, { headers: { Accept: 'application/vnd.github+json' } })
     if (!res.ok) return null
     const { tag_name: tag, html_url: page } = await res.json()
-    // only ever link to this repo's release pages
-    if (!isNewer(tag, current) || typeof page !== 'string' || !page.startsWith(PAGE)) return null
-    return { version: String(tag).replace(/^v/, ''), url: page }
+    // only ever link to this repo's release pages, normalized first so ../ can't climb out of them
+    const link = new URL(page).href
+    if (!isNewer(tag, current) || !link.startsWith(PAGE)) return null
+    return { version: String(tag).replace(/^v/, ''), url: link }
   } catch {
     return null
   }
