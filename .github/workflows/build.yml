@@ -71,7 +71,19 @@ jobs:
           path: .cache
           key: electron-${{ matrix.name }}-${{ hashFiles('package-lock.json') }}
       - run: npm ci
+      # Mac: package.json signs ad hoc ("identity": "-") and electron-builder notarizes only when the
+      # APPLE_* variables are set, so without the secrets this is the unsigned build it always was.
+      # When the Developer ID certificate exists: add APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
+      # and the certificate as repo secrets, pass the certificate here as CSC_LINK / CSC_KEY_PASSWORD
+      # (not before: an empty CSC_LINK fails the build), drop "identity": "-" and add "zip" to the mac
+      # targets (electron-updater on macOS reads the zip).
+      # Windows: signing (SignPath or Azure Trusted Signing) goes in as a step after this one,
+      # signing dist/*.exe before the smoke test and the upload.
       - run: ${{ matrix.build }}
+        env:
+          APPLE_ID: ${{ matrix.app && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.app && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.app && secrets.APPLE_TEAM_ID || '' }}
 
       # Linux: install the .deb like a user would, then run it on a virtual display
       - name: smoke test (linux)
