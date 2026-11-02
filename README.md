@@ -145,6 +145,18 @@ State lives in `state.json` in the app's user data folder.
 Extensions: install from the Chrome Web Store (File > Chrome Web Store), and their
 buttons show up in the sidebar.
 
+Tabs you haven't looked at for an hour give their memory back and stay in the
+sidebar; clicking one loads it again (Tab > Unload After: 30m, 1h, 3h, Off). The tab
+on screen, both halves of a split, tabs playing sound and tabs with a
+picture-in-picture video stay loaded (a muted video popped out of an embedded player
+is not noticed). Form input on an unloaded page is lost, like a reload.
+
+Memory: 23 loaded tabs (electronjs.org docs, GitHub, Wikipedia and MDN across three
+spaces) on an M5 Air took 4.9 GB; after the idle unload 0.85 GB. That is the summed
+RSS of every camber process, from source in demo mode, 60 s after the last tab
+opened and 30 s after the unload. Electron is not lighter than Arc's native shell;
+this is what the sidebar costs with its tabs asleep.
+
 ## Known gaps
 
 - 1Password doesn't work yet. Bitwarden installs and opens; autofill with a

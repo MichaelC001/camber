@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert')
-const { touch, forget, afterClose, move, prune, web, loadable, navigable, permKeys, permission, checked, permOrigin, asker, pairOk, route: tabsRoute } = require('../tabs')
+const { touch, forget, afterClose, move, prune, idle, web, loadable, navigable, permKeys, permission, checked, permOrigin, asker, pairOk, route: tabsRoute } = require('../tabs')
 
 test('closing a tab goes back to the one used before it', () => {
   let mru = []
@@ -228,4 +228,16 @@ test('a permission belongs to the origin of the frame asking', () => {
   assert.strictEqual(permOrigin(undefined, 'chrome-extension://abc/popup.html'), 'chrome-extension://abc')
   // no origin to give: denied downstream
   for (const u of ['file:///etc/hosts', 'data:text/html,hi', 'blob:null/1b2c', undefined]) assert.strictEqual(permOrigin(undefined, u, 'https://top.example/'), '', String(u))
+})
+
+test('idle tabs unload, except what is on screen, in a split, or kept', () => {
+  const min = 60000, now = 1000 * min
+  const state = { active: 0, spaces: [{ activeId: 'shown', split: null }, { activeId: 'other', split: ['l', 'r'] }] }
+  const t = (id, ago, url = 'https://example.com/') => ({ id, url, lastActive: ago === undefined ? undefined : now - ago * min })
+  const loaded = [t('shown', 500), t('old', 90), t('fresh', 10), t('other', 90), t('l', 90), t('r', 90), t('loud', 90), t('new'), t('blob', 90, 'blob:https://example.com/1')]
+  assert.deepStrictEqual(idle(state, loaded, now, 60, ['loud']), ['old', 'other'])
+  // a 0 minute threshold takes everything that isn't busy, a tab with no lastActive included;
+  // a blob: page could not come back, so it stays
+  assert.deepStrictEqual(idle(state, loaded, now, 0, ['loud']), ['old', 'fresh', 'other', 'new'])
+  assert.deepStrictEqual(idle(state, [], now, 0), [])
 })

@@ -265,7 +265,11 @@ function layout() {
   p?.forEach((id) => { const { t } = find(id); t.lastActive = Date.now(); viewFor(t) })
   const shown = new Set([...views.keys()].filter((id) => p ? p.includes(id) : id === space().activeId))
   for (const [id, v] of views) {
-    if (onScreen.has(id) !== shown.has(id)) pip(v.webContents, !shown.has(id))
+    if (onScreen.has(id) !== shown.has(id)) {
+      pip(v.webContents, !shown.has(id))
+      // archive and unload count from when a tab left the screen, not from when it was picked
+      if (!shown.has(id)) { const f = find(id); if (f) f.t.lastActive = Date.now() }
+    }
     v.setVisible(shown.has(id))
     v.setBounds(paneBounds(id))
   }
@@ -419,6 +423,25 @@ function archive() {
   return gone.length
 }
 
+// tabs not used for unloadMinutes (state.json, default 60, 0 = off) give their page back and stay in
+// the sidebar; selecting one loads it again. Never the tab on screen, a split pane, the peek's source,
+// or a tab playing sound or showing a picture-in-picture video.
+const unloadMinutes = () => state.unloadMinutes ?? 60
+async function unload(minutes) {
+  // the pages are asked side by side, and a page that doesn't answer within a second (still loading,
+  // hung) is kept. Sound and the peek can change meanwhile, so they are read after the wait.
+  // Only the page's own document is asked: a muted video popped out of an iframe isn't seen.
+  const pips = await Promise.all([...views].map(([id, v]) =>
+    Promise.race([run(v.webContents, '!!document.pictureInPictureElement', false), new Promise((r) => setTimeout(r, 1000, true))])
+      .catch(() => true).then((on) => on && id)))
+  const keep = [peek?.source, ...pips, ...[...views].filter(([, v]) => v.webContents.isCurrentlyAudible()).map(([id]) => id)]
+  const loaded = [...views.keys()].map((id) => find(id)?.t).filter(Boolean)
+  const gone = tabs.idle(state, loaded, Date.now(), minutes, keep)
+  gone.forEach(dropView)
+  if (gone.length) { layout(); render() }
+  return gone.length
+}
+
 function setArchiveHours(h) {
   state.archiveHours = h
   archive()
@@ -532,7 +555,7 @@ async function openPalette(mode) {
 // Peek: Shift+click a favorite (Cmd+Shift+click a pinned tab) opens it in a panel over the page,
 // on the space's profile. ui.html draws the panel and its strip under the page view; Esc or a
 // click outside closes it, Open as tab (Cmd+O) moves it to today.
-let peek = null // { view, url, loading, toTab }; loading is set once its page has been asked for
+let peek = null // { view, url, source, loading, toTab }; loading is set once its page has been asked for
 const INSET = 48
 const STRIP = 36
 const peekBounds = () => {
@@ -547,7 +570,7 @@ const fitPeek = () => {
 async function openPeek(id) {
   const t = find(id)?.t
   if (!t || peek || paletteOpen || !allowed(t.url)) return
-  const p = peek = { view: new WebContentsView({ webPreferences: { partition: 'persist:' + space().profile } }), url: t.url }
+  const p = peek = { view: new WebContentsView({ webPreferences: { partition: 'persist:' + space().profile } }), url: t.url, source: id }
   const snap = await backdrop()
   if (peek !== p) return
   p.view.setBorderRadius(10)
@@ -695,6 +718,11 @@ function menu() {
           submenu: [[12, '12h'], [24, '24h'], [0, 'Off']].map(([h, label]) =>
             ({ label, type: 'radio', checked: archiveHours() === h, click: () => setArchiveHours(h) })),
         },
+        {
+          label: 'Unload After',
+          submenu: [[30, '30m'], [60, '1h'], [180, '3h'], [0, 'Off']].map(([m, label]) =>
+            ({ label, type: 'radio', checked: unloadMinutes() === m, click: () => { state.unloadMinutes = m; render() } })),
+        },
       ],
     },
     {
@@ -756,6 +784,7 @@ app.whenReady().then(() => {
   if (shown) shown.t.lastActive = Date.now()
   archive()
   setInterval(() => { if (archive()) { layout(); render() } }, 10 * 60 * 1000)
+  setInterval(() => { if (unloadMinutes()) unload(unloadMinutes()) }, 5 * 60 * 1000)
   // the sidebar's nav row is laid out around this exact traffic light position
   win = new BaseWindow(MAC
     ? { width: 1280, height: 820, titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 18, y: 18 }, backgroundColor: space().color }
@@ -780,3 +809,6 @@ app.whenReady().then(() => {
   menu()
   layout()
 })
+
+// reachable from the main process inspector (--inspect), which is how the memory numbers in the README were taken
+module.exports = { unload }

@@ -83,6 +83,15 @@ function prune(state, now, hours) {
   return gone
 }
 
+// loaded tabs not active for `minutes` whose pages can go; the sidebar keeps them. Never the tab on
+// screen, a split pane, or anything in `keep` (the peek's source, tabs playing sound or a
+// picture-in-picture video), or a page that couldn't be loaded again (a blob: document).
+// A tab with no lastActive counts as just used.
+function idle(state, loaded, now, minutes, keep = []) {
+  const busy = new Set([state.spaces[state.active]?.activeId, ...state.spaces.flatMap((s) => s.split || []), ...keep])
+  return loaded.filter((t) => !busy.has(t.id) && loadable(t.url) && now - (t.lastActive ?? now) >= minutes * 60000).map((t) => t.id)
+}
+
 // the only URLs camber loads from outside input (other apps, page popups, the little window's
 // address): http and https, plus about:blank. file:, javascript:, data:, chrome: and the rest don't pass.
 function web(url) {
@@ -162,4 +171,4 @@ function route(routes, url, spaceIds) {
 // today and favorites); a restored one that points elsewhere is dropped
 const pairOk = (split, ids) => Array.isArray(split) && split.length === 2 && split[0] !== split[1] && split.every((id) => ids.includes(id))
 
-module.exports = { nodes, detach, move, touch, forget, afterClose, prune, web, loadable, navigable, permKeys, permission, checked, permOrigin, asker, covers, route, pairOk }
+module.exports = { nodes, detach, move, touch, forget, afterClose, prune, idle, web, loadable, navigable, permKeys, permission, checked, permOrigin, asker, covers, route, pairOk }
