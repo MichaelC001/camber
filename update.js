@@ -1,4 +1,5 @@
-// Release check: tells the sidebar when GitHub has a newer camber. Nothing is downloaded.
+// Release check: tells the sidebar when GitHub has a newer camber. Where electron-updater can
+// install it (mode 'auto'), main.js downloads it in the background instead.
 
 const RELEASES = 'https://api.github.com/repos/yuvrajangadsingh/camber/releases/latest'
 const PAGE = 'https://github.com/yuvrajangadsingh/camber/releases/'
@@ -31,4 +32,15 @@ async function check(current, fetchFn = fetch, url = RELEASES) {
   }
 }
 
-module.exports = { isNewer, check }
+// 'auto' only for a packaged build electron-updater can replace: the Windows NSIS install, a
+// Linux AppImage, a Developer ID signed Mac app (it refuses ad-hoc ones). Everything else,
+// .deb included, gets the notice that links to the release page.
+function mode({ platform, packaged, signed, appImage }) {
+  if (!packaged) return 'notice'
+  if (platform === 'win32') return 'auto'
+  if (platform === 'linux' && appImage) return 'auto'
+  if (platform === 'darwin' && signed) return 'auto'
+  return 'notice'
+}
+
+module.exports = { isNewer, check, mode }

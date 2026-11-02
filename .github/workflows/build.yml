@@ -108,6 +108,8 @@ jobs:
         if: matrix.app
         run: node .github/smoke.mjs ${{ matrix.app }} shot-${{ matrix.name }}.png
 
+      # releases are made by hand from these artifacts: the latest*.yml files go up with the
+      # installers, they are what the auto-updater in Windows and AppImage builds reads
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -119,4 +121,5 @@ jobs:
             dist/*.dmg
             dist/*.AppImage
             dist/*.deb
+            dist/latest*.yml
             shot-*.png

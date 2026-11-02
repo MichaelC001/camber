@@ -140,11 +140,36 @@ function importArc(file = arcPath()) {
   showSpace(state.spaces.findIndex((s) => s.arcId === spaces[0]?.arcId))
 }
 
-// a newer release on GitHub, shown as a dismissible banner; never downloaded or installed
-let update = null
-async function checkUpdate() {
+// a newer release on GitHub, shown as a dismissible banner. On Windows, a Linux AppImage and a
+// Developer ID signed Mac app electron-updater downloads it (only from this repo's GitHub releases,
+// set at build time by build.publish) and the banner offers a restart; it never restarts by itself.
+// Any updater error falls back to the banner that links to the release page.
+let update = null // { version, url, ready }
+const macSigned = () => MAC && app.isPackaged &&
+  /Authority=Developer ID Application/.test(require('node:child_process').spawnSync('codesign', ['-dvv', path.join(process.execPath, '../../..')]).stderr || '')
+let updater = null
+async function notice() {
+  if (update?.ready) return
   update = await updates.check(app.getVersion(), net.fetch, process.env.CAMBER_UPDATE_URL || undefined)
   render()
+}
+function checkUpdate() {
+  if (!updater) return notice()
+  // failures, the download's included, arrive as 'error'
+  if (!update?.ready) updater.checkForUpdates().then((r) => r?.downloadPromise?.catch(() => {}), () => {})
+}
+function startUpdates() {
+  const auto = updates.mode({ platform: process.platform, packaged: app.isPackaged, signed: macSigned(), appImage: !!process.env.APPIMAGE }) === 'auto'
+  if (auto) {
+    updater = require('electron-updater').autoUpdater
+    updater.on('error', (e) => { console.warn('camber update:', e?.message); notice() })
+    updater.on('update-downloaded', ({ version }) => {
+      update = { version, url: 'https://github.com/yuvrajangadsingh/camber/releases/tag/v' + version, ready: true }
+      render()
+    })
+  }
+  setTimeout(checkUpdate, 10 * 1000)
+  setInterval(checkUpdate, 6 * 60 * 60 * 1000)
 }
 
 let saveTimer
@@ -605,6 +630,7 @@ const commands = {
   reload,
   toggleSidebar,
   openUpdate: () => update && newTab(update.url),
+  restartToUpdate: () => update?.ready && updater.quitAndInstall(),
   dismissUpdate() { if (update) { state.dismissedUpdate = update.version; render() } },
   // drag and drop in the sidebar; a today tab dropped among the pinned ones is pinned, and back
   moveTab,
@@ -742,10 +768,7 @@ app.whenReady().then(() => {
   win.contentView.addChildView(ui)
   ui.webContents.loadFile('ui.html')
   ui.webContents.once('did-finish-load', () => {
-    if (!DEMO || process.env.CAMBER_UPDATE_URL) {
-      checkUpdate()
-      setInterval(checkUpdate, 6 * 60 * 60 * 1000)
-    }
+    if (!DEMO || process.env.CAMBER_UPDATE_URL) startUpdates()
     if ([...tabsOf(space())].length) showSpace(state.active)
     else if (!DEMO) newTab('https://duckduckgo.com')
     else render() // demo starts empty, ready for Import from Arc

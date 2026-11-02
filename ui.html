@@ -73,11 +73,12 @@
   .muted { color: var(--muted); }
   .plus { display: grid; place-items: center; font-size: 15px; }
 
-  #update { display: flex; align-items: center; gap: 6px; margin: 8px 0 4px; padding: 0 4px 0 10px; height: 34px; border-radius: 9px; background: var(--active); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  #update { display: flex; align-items: center; gap: 6px; margin: 8px 0 4px; padding: 5px 4px 5px 10px; min-height: 34px; box-sizing: border-box; border-radius: 9px; background: var(--active); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
   #update[hidden] { display: none; }
   #update a { flex: 1; color: var(--text); text-decoration: none; font-weight: 600; cursor: pointer; }
   #update button { width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 15px; }
   #update button:hover { background: var(--hover); }
+  #update .restart { width: auto; padding: 0 8px; color: var(--text); font: inherit; font-weight: 600; }
   #import { margin: 8px 0 4px; height: 34px; border: 0; border-radius: 9px; background: var(--active); color: var(--text); font: inherit; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
   #actions { display: flex; flex-wrap: wrap; gap: 2px; padding: 6px 2px 0; }
   #actions::part(action) { width: 28px; height: 28px; border-radius: 7px; background-color: transparent; }
@@ -124,7 +125,7 @@
   <div id="favs"></div>
   <div id="space-name"></div>
   <div id="tabs"></div>
-  <div id="update" hidden><a></a><button title="Dismiss">×</button></div>
+  <div id="update" hidden><a></a><button class="restart" hidden>Restart</button><button title="Dismiss">×</button></div>
   <button id="import" hidden>Import from Arc</button>
   <browser-action-list id="actions" alignment="top right"></browser-action-list>
   <div id="spaces"></div>
@@ -214,7 +215,8 @@ let current, mode, picked = 0
 
 $('import').onclick = () => camber.send('importArc')
 $('update').querySelector('a').onclick = () => camber.send('openUpdate')
-$('update').querySelector('button').onclick = () => camber.send('dismissUpdate')
+$('update').querySelector('.restart').onclick = () => camber.send('restartToUpdate')
+$('update').querySelector('[title=Dismiss]').onclick = () => camber.send('dismissUpdate')
 $('pill').onclick = () => camber.send('openPalette', 'edit')
 // double-click the space name to rename it: Enter saves, Esc or clicking away cancels
 $('space-name').ondblclick = () => {
@@ -247,7 +249,8 @@ camber.onState(({ state, sidebarOpen, offerArc, tabId, extensionsVersion, nav, p
   $('pane').style.display = pane ? 'block' : ''
   if (pane) Object.assign($('pane').style, { left: pane.x - 2 + 'px', top: pane.y - 2 + 'px', width: pane.width + 4 + 'px', height: pane.height + 4 + 'px' })
   $('update').hidden = !update
-  if (update) $('update').querySelector('a').textContent = `camber ${update.version} is out`
+  if (update) $('update').querySelector('a').textContent = update.ready ? `camber ${update.version} is ready, restart to update` : `camber ${update.version} is out`
+  $('update').querySelector('.restart').hidden = !update?.ready
   document.body.classList.toggle('mac', platform === 'darwin')
   current = state
   const s = state.spaces[state.active]

@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert')
-const { isNewer, check } = require('../update')
+const { isNewer, check, mode } = require('../update')
 
 test('compares release versions', () => {
   assert.strictEqual(isNewer('v0.2.0', '0.1.0'), true)
@@ -25,4 +25,17 @@ test('checks GitHub quietly', async () => {
   assert.strictEqual(await check('0.1.0', async () => { throw new TypeError('fetch failed') }), null)
   // a release page anywhere else is never offered
   assert.strictEqual(await check('0.1.0', reply(200, { tag_name: 'v9.0.0', html_url: 'https://example.com/x' })), null)
+})
+
+test('installs in the background only where electron-updater can', () => {
+  const m = (platform, packaged, signed, appImage) => mode({ platform, packaged, signed, appImage })
+  assert.strictEqual(m('win32', true, false, false), 'auto')
+  assert.strictEqual(m('linux', true, false, true), 'auto')
+  assert.strictEqual(m('darwin', true, true, false), 'auto')
+  // run from source, a .deb, an ad-hoc signed Mac app, anything else
+  assert.strictEqual(m('win32', false, false, false), 'notice')
+  assert.strictEqual(m('linux', false, false, true), 'notice')
+  assert.strictEqual(m('linux', true, false, false), 'notice')
+  assert.strictEqual(m('darwin', true, false, false), 'notice')
+  assert.strictEqual(m('freebsd', true, true, true), 'notice')
 })

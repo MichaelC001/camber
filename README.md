@@ -149,11 +149,12 @@ buttons show up in the sidebar.
 
 - 1Password doesn't work yet. Bitwarden installs and opens; autofill with a
   logged-in vault is untested.
-- No auto-update, no code signing, no Windows arm64 build.
+- No code signing, no Windows arm64 build. Updates install themselves only on Windows
+  and the AppImage (from the next release on); macOS and the .deb get a note in the sidebar.
 - No Widevine: Netflix, Prime Video, Disney+ and Spotify web do not play (stock
   Electron ships no DRM module).
 - No USB, HID, serial, Bluetooth or screen sharing: sites asking for them are refused.
-- No sync, split view, Peek, Boosts or Live Folders.
+- No sync, Boosts or Live Folders.
 
 ## Remote debugging
 
@@ -168,10 +169,12 @@ Anything on your machine can then drive the browser, so leave it off normally.
 ## Status
 
 v0. Works for daily poking around, not yet for daily driving: builds are
-unsigned and there is no auto-update. camber asks GitHub for the latest release
-at startup and every 6 hours, and shows a small note in the sidebar when a newer
-one is out. That request is the only thing it sends; it never downloads or
-installs anything by itself.
+unsigned. camber asks GitHub for the latest release 10 seconds after startup and
+every 6 hours. On Windows and the AppImage it downloads a newer release from this
+repo's GitHub releases in the background and offers a Restart button in the
+sidebar; it never restarts by itself. On macOS (the app isn't signed, so it can't
+update itself) and the .deb it shows a note that links to the release. Those
+requests are the only things it sends.
 
 ## License
 
