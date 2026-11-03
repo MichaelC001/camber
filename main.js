@@ -285,7 +285,6 @@ function extensionsFor(profile) {
   if (extensions.has(profile)) return extensions.get(profile)
   const ses = session.fromPartition('persist:' + profile)
   const ext = new ElectronChromeExtensions({
-    license: 'GPL-3.0',
     session: ses,
     createTab({ url }) {
       newTab(url || 'about:blank')
