@@ -3,6 +3,29 @@
 Newest first. Installers and the full notes are on the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases).
 
+## 0.3.0 (2026-11-04)
+
+Idle tabs give their memory back, and Windows and Linux builds can update themselves.
+
+- Tab unload: tabs you haven't looked at for an hour give their memory back and stay
+  in the sidebar; clicking one loads it again (Tab > Unload After: 30m, 1h, 3h, Off).
+  The tab on screen, both halves of a split, tabs playing sound and tabs with a
+  picture-in-picture video stay loaded. 23 loaded tabs took 4.9 GB, 0.85 GB after the
+  unload (summed RSS of every camber process, from source on an M5 Air). Form input
+  on an unloaded page is lost, like a reload.
+- A tab's archive and unload clock starts when it leaves the screen, so reading one
+  page for two hours doesn't make it look idle. A today tab playing sound is never
+  archived.
+- Updates: on Windows and the AppImage, camber downloads a newer release in the
+  background and offers Restart in the sidebar; it never restarts by itself. macOS
+  and the .deb keep the note that links to the release. 0.3.0 is the first release
+  with the files the updater reads, so this shows from the next release on.
+- The update note only opens this repo's release pages.
+- Electron 45.2.1.
+
+Known gaps: nothing is signed; no Widevine; 1Password doesn't work yet; no Windows
+arm64 build, no sync, Boosts or Live Folders.
+
 ## 0.2.0 (2026-11-01)
 
 The Arc features people said they would miss most, plus tab hygiene.
