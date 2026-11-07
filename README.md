@@ -57,9 +57,16 @@ Get the installer for your system from the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases) and check it
 against `SHA256SUMS.txt`. What changed in each release is in [CHANGELOG.md](CHANGELOG.md).
 
+On macOS, Homebrew installs it too and clears the quarantine flag, so the app opens
+without the warning below:
+
+```sh
+brew install yuvrajangadsingh/tap/camber
+```
+
 | OS | File | Tested |
 | --- | --- | --- |
-| macOS, Apple Silicon | `camber-<version>-arm64.dmg` | launched from the DMG on a Mac |
+| macOS, Apple Silicon | `camber-<version>-arm64.dmg` | launched in CI (GitHub's Apple Silicon runner) and from the DMG on a Mac |
 | macOS, Intel | `camber-<version>-x64.dmg` | launched in CI (GitHub's Intel macOS runner) |
 | Windows, x64 | `camber-<version>-x64.exe` | installed silently and launched in CI |
 | Linux, x64 | `.deb`, `.AppImage` | both launched in CI (Ubuntu, virtual display) |
