@@ -3,6 +3,24 @@
 Newest first. Installers and the full notes are on the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases).
 
+## 0.3.1 (2026-11-08)
+
+camber says it's a beta, and reporting a bug takes one click.
+
+- A card in the sidebar on first launch (and once after this update) says camber is
+  in beta and links to the bug form. Feedback in the sidebar, and Help > Report a
+  Bug on macOS, open GitHub's issue form in your browser with camber's version and
+  your OS filled in. GitHub gets those two when the page opens; nothing is posted
+  until you submit. Ideas are welcome there too.
+- Homebrew on macOS: `brew install yuvrajangadsingh/tap/camber`. The cask clears the
+  quarantine flag, so the app opens without the unsigned-app prompt.
+- Releases are now built, checked and drafted by CI from a tag, the Apple Silicon DMG
+  included, so fixes can ship sooner. From the next release on, Windows updates
+  download only the parts that changed.
+
+Known gaps: nothing is signed; no Widevine; 1Password doesn't work yet; no Windows
+arm64 build, no sync, Boosts or Live Folders.
+
 ## 0.3.0 (2026-11-04)
 
 Idle tabs give their memory back, and Windows and Linux builds can update themselves.
