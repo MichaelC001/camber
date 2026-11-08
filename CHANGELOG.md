@@ -3,6 +3,18 @@
 Newest first. Installers and the full notes are on the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases).
 
+## 0.3.2 (2026-11-09)
+
+Windows and Linux get their menus.
+
+- The window on Windows and Linux has no menu bar, so File, Tab and Help were out of
+  reach there: Import Arc File, the Chrome Web Store, making camber the default browser,
+  and the routing, unload and archive options. On Linux that meant no practical way to
+  import from Arc. A ≡ button at the top left of the sidebar now opens them.
+
+Known gaps: nothing is signed; no Widevine; 1Password doesn't work yet; no Windows
+arm64 build, no sync, Boosts or Live Folders.
+
 ## 0.3.1 (2026-11-08)
 
 camber says it's a beta, and reporting a bug takes one click.
