@@ -171,7 +171,7 @@ jobs:
             gh release create "$GITHUB_REF_NAME" --draft --verify-tag --title "camber ${GITHUB_REF_NAME#v}" --notes-file release/notes.md release/files/*
           fi
           # an older tag finishing after a newer one must not take "latest" back: the updater
-          # feed and the Homebrew tap (which checks hourly) both follow releases/latest
+          # feed and the Homebrew tap (which checks every 15 minutes) both follow releases/latest
           # ponytail: two tags publishing in the same seconds could still race; tag one at a time
           latest=$(gh release view --json tagName -q .tagName 2>/dev/null || true)
           newest=$(printf '%s\n' "$latest" "$GITHUB_REF_NAME" | sort -V | tail -1)
