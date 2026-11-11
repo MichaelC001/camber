@@ -306,6 +306,7 @@ function extensionsFor(profile) {
       if (id) select(id)
     },
   })
+  for (const type of ['frame', 'service-worker']) ses.registerPreloadScript({ id: 'browser-alias-' + type, type, filePath: path.join(__dirname, 'extension-preload.js') })
   installChromeWebStore({ session: ses }).catch((e) => console.error('web store:', e))
   // the toolbar element doesn't notice installs, so the ui rebuilds it when this changes
   const bump = () => { extensionsVersion++; if (ui) render() }
