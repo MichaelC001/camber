@@ -16,7 +16,7 @@ Made by [Yuvraj Angad Singh](https://github.com/yuvrajangadsingh)
 
 [![As seen on Open Source Alternatives](https://www.opensourcealternatives.to/badge-osa.svg)](https://www.opensourcealternatives.to)
 
-![camber demo: switching spaces, the command bar, split view, Peek, a little window, and a video popping out when you leave its tab](docs/demo.gif)
+https://github.com/user-attachments/assets/d8d78073-6ded-470b-b945-4a316469ab22
 
 ## What it looks like
 
