@@ -18,28 +18,6 @@ Made by [Yuvraj Angad Singh](https://github.com/yuvrajangadsingh)
 
 https://github.com/user-attachments/assets/d8d78073-6ded-470b-b945-4a316469ab22
 
-## What it looks like
-
-A space: pinned tabs, a Docs folder open, the page on the right.
-
-![camber window with the Work space: GitHub, Linear and Figma pinned, the Docs folder open with Electron docs selected, and the Electron docs page](docs/screens/sidebar-spaces-folders.png)
-
-Split view: two tabs side by side, the active one ringed.
-
-![camber split view: Electron docs on the left with a blue ring, the GitHub Hello-World repo on the right](docs/screens/split-view.png)
-
-Peek: Cmd+Shift+click a pinned tab to look at it without leaving the page.
-
-![camber Peek: the Node.js docs page in a panel over a blurred page, with an Open as tab button](docs/screens/peek.png)
-
-Little window: a link from another app opens here, Open in camber moves it into a space.
-
-![a small camber window showing the Wikipedia Web browser article in front of the main window](docs/screens/little-window.png)
-
-Command bar: Cmd+T, type a few letters, jump to an open tab or search.
-
-![camber command bar with "do" typed: Electron docs, Node.js docs, GitHub and MDN to switch to, and a DuckDuckGo search](docs/screens/command-bar.png)
-
 ## Why
 
 Arc is being sunset on Dec 22 2026. It was closed source, so nobody can fork it.
