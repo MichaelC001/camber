@@ -3,6 +3,23 @@
 Newest first. Installers and the full notes are on the
 [releases page](https://github.com/yuvrajangadsingh/camber/releases).
 
+## 0.4.1 (2026-11-11)
+
+Electron 45.3.0, and a first fix for password manager extensions.
+
+- Chromium 156.0.8078.96, with Chromium, Dawn and V8 fixes from upstream.
+- In an extension's background and its own pages, `browser` now has the API groups
+  camber adds to `chrome` that it was missing, such as windows. 1Password's extension
+  no longer crashes on start, but its popup still stays on the loading screen, so it doesn't
+  work yet.
+- Apple Passwords: macOS starts the helper behind the iCloud Passwords extension only
+  for browsers on Apple's list. camber has to be signed before it can be added.
+- Tried on macOS (Apple Silicon): the saved-password tests and the 1Password and
+  Bitwarden extensions. Windows and Linux only start in CI.
+
+Known gaps: nothing is signed; no Widevine; 1Password and Apple Passwords don't work
+yet; no password import; no Windows arm64 build, no sync, Boosts or Live Folders.
+
 ## 0.4.0 (2026-11-09)
 
 camber saves your passwords and fills them in.

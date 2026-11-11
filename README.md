@@ -207,8 +207,11 @@ this is what the sidebar costs with its tabs asleep.
 
 ## Known gaps
 
-- 1Password doesn't work yet. Bitwarden installs and opens; autofill with a
-  logged-in vault is untested.
+- 1Password doesn't work yet: its extension starts, but the popup stays on the
+  loading screen. Bitwarden installs and opens; autofill with a logged-in vault is
+  untested.
+- Apple Passwords (the iCloud Passwords extension) doesn't work: macOS starts its
+  helper only for browsers on Apple's list, and an unsigned camber can't be on it.
 - Saved passwords: no import from Arc, Chrome or a CSV file, no password generator,
   and no search in the list.
 - No code signing, no Windows arm64 build. Updates install themselves only on Windows
